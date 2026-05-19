@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ada Surat Spesial Buat Kamu! 💌</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts (Playfair Display & Poppins) -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght=0,600;1,400&family=Poppins:wght=300;400;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #ffe5ec 0%, #ffc2d1 100%);
+            overflow-x: hidden;
+        }
+        
+        .serif-font {
+            font-family: 'Playfair Display', serif;
+        }
+
+        /* Animasi Amplop Terbuka/Tertutup */
+        .envelope-wrapper {
+            perspective: 1000px;
+        }
+
+        .envelope {
+            position: relative;
+            background-color: #f08080;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+            transition: transform 0.8s ease-in-out;
+            transform-style: preserve-3d;
+        }
+
+        .envelope.open {
+            transform: translateY(150px) rotateX(10deg);
+        }
+
+        .envelope::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 0;
+            border-left: 150px solid transparent;
+            border-right: 150px solid transparent;
+            border-top: 100px solid #f08080;
+            transform-origin: top;
+            transition: transform 0.5s ease-in-out 0.3s;
+            z-index: 30;
+        }
+
+        /* Penutup amplop setelah terbuka */
+        .envelope.open::before {
+            transform: rotateX(180deg);
+            z-index: 5;
+            border-top-color: #e56b6b;
+        }
+
+        .envelope-pocket {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 120px;
+            background-color: #f4978e;
+            border-bottom-left-radius: 8px;
+            border-bottom-right-radius: 8px;
+            z-index: 10;
+        }
+
+        .envelope-pocket::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 0;
+            border-left: 150px solid #f4978e;
+            border-bottom: 120px solid #fbc4b6;
+            z-index: 11;
+        }
+
+        .envelope-pocket::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 0;
+            height: 0;
+            border-right: 150px solid #f4978e;
+            border-bottom: 120px solid #fbc4b6;
+            z-index: 11;
+        }
+
+        /* Animasi kertas surat naik */
+        .letter {
+            position: absolute;
+            bottom: 10px;
+            left: 15px;
+            width: 270px;
+            height: 180px;
+            background-color: #ffffff;
+            border-radius: 4px;
+            transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.6s, z-index 0s linear 0.6s;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            z-index: 8;
+        }
+
+        .envelope.open .letter {
+            transform: translateY(-220px) scale(1.05);
+            z-index: 25;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+        }
+
+        /* Balon hati yang beterbangan di latar belakang */
+        .heart-float {
+            position: absolute;
+            color: rgba(255, 105, 180, 0.4);
+            animation: floatUp 6s linear infinite;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        @keyframes floatUp {
+            0% {
+                transform: translateY(105vh) rotate(0deg) scale(0.5);
+                opacity: 0;
+            }
+            15% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 0.9;
+            }
+            100% {
+                transform: translateY(-10vh) rotate(360deg) scale(1.5);
+                opacity: 0;
+            }
+        }
+
+        /* Animasi mengambang tenang untuk amplop sebelum dibuka */
+        .float-bounce {
+            animation: bounceSlow 3s ease-in-out infinite;
+        }
+
+        @keyframes bounceSlow {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        /* Efek kilauan bintang */
+        .sparkle {
+            animation: sparklePulse 1.5s infinite ease-in-out;
+        }
+        @keyframes sparklePulse {
+            0%, 100% { transform: scale(0.8); opacity: 0.5; }
+            50% { transform: scale(1.2); opacity: 1; }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center p-4 relative overflow-hidden">
+
+    <!-- Kontainer Hati Melayang di Background -->
+    <div id="bg-hearts-container" class="absolute inset-0 overflow-hidden pointer-events-none z-0"></div>
+
+    <!-- Tampilan 1: Layar Masuk / Pembuka Amplop -->
+    <div id="section-envelope" class="w-full max-w-md flex flex-col items-center justify-center z-10 transition-all duration-1000">
+        <!-- Judul sapaan -->
+        <h1 class="text-2xl md:text-3xl font-bold text-rose-600 text-center mb-6 serif-font drop-shadow-sm px-4">
+            Ada pesan khusus buat kamu nih! 💌
+        </h1>
+        <p class="text-gray-600 text-sm md:text-base text-center mb-10 px-6">
+            Seseorang mengirimkan surat rahasia untukmu. Yuk, sentuh amplopnya buat buka pesannya!
+        </p>
+
+        <!-- Wadah Amplop -->
+        <div class="envelope-wrapper float-bounce cursor-pointer flex justify-center items-center h-[280px]" onclick="openLetter()">
+            <div id="my-envelope" class="envelope w-[300px] h-[180px] rounded-b-lg">
+                <!-- Isi Kertas Surat (Awalnya tersembunyi di dalam amplop) -->
+                <div class="letter p-4 flex flex-col items-center justify-center text-center">
+                    <i class="fa-solid fa-heart text-rose-500 text-2xl animate-pulse mb-1"></i>
+                    <p class="text-xs text-rose-400 font-semibold uppercase tracking-wider">Spesial Untukmu</p>
+                    <div class="w-20 h-[2px] bg-rose-100 my-1"></div>
+                    <p class="text-[10px] text-gray-400 italic">Ketuk sekali lagi ya!</p>
+                </div>
+                <!-- Saku Depan Amplop -->
+                <div class="envelope-pocket"></div>
+                <!-- Segel Lilin Berbentuk Hati -->
+                <div id="seal-icon" class="absolute top-[40px] left-[135px] w-8 h-8 bg-rose-600 rounded-full flex items-center justify-center shadow-lg transition-transform duration-300 hover:scale-110 z-40">
+                    <i class="fa-solid fa-heart text-white text-sm"></i>
+                </div>
+            </div>
+        </div>
+        
+        <p class="mt-8 text-rose-500 font-medium text-xs md:text-sm animate-pulse flex items-center gap-2">
+            <i class="fa-solid fa-hand-pointer"></i> Klik amplop di atas
+        </p>
+    </div>
+
+    <!-- Tampilan 2: Tampilan Surat & Pertanyaan Menghindar -->
+    <div id="section-letter" class="hidden w-full max-w-lg bg-white rounded-3xl shadow-2xl p-6 md:p-8 border-4 border-rose-200 z-10 relative transform scale-95 opacity-0 transition-all duration-700">
+        <!-- Ornamen Sudut Atas -->
+        <div class="absolute top-4 left-4 text-rose-300 text-xl"><i class="fa-solid fa-heart"></i></div>
+        <div class="absolute top-4 right-4 text-rose-300 text-xl"><i class="fa-solid fa-heart"></i></div>
+        
+        <div class="text-center pt-4">
+            <div class="inline-block relative mb-4">
+                <i class="fa-solid fa-envelope-open text-rose-400 text-4xl"></i>
+                <span class="absolute -top-1 -right-1 flex h-3 w-3">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-3 w-3 bg-rose-500"></span>
+                </span>
+            </div>
+            
+            <h2 class="serif-font text-2xl md:text-3xl text-rose-600 font-bold mb-6">Halo Sayang ✨</h2>
+            
+            <!-- Teks Pesan dari Pengguna -->
+            <div class="bg-rose-50 p-6 rounded-2xl border border-rose-100 mb-8 leading-relaxed text-gray-700 text-base md:text-lg font-medium shadow-inner relative">
+                <i class="fa-solid fa-quote-left text-rose-200 text-3xl absolute top-2 left-3"></i>
+                <div class="relative z-10 px-2 py-1">
+                    "makasi yawww uda ada di hidupku, uda ngisi hari-hari ku yang kelammmm,, and makasi buat cintamu yang ada untukku"
+                </div>
+                <i class="fa-solid fa-quote-right text-rose-200 text-3xl absolute bottom-2 right-3"></i>
+            </div>
+            
+            <!-- Pertanyaan Menghindar -->
+            <div class="mb-6">
+                <p id="question-text" class="text-gray-800 font-semibold text-lg md:text-xl mb-4">
+                    Kamu mau kan nemenin aku terus? 🥺👉👈
+                </p>
+            </div>
+            
+            <!-- Kontainer Tombol Interaktif -->
+            <div class="flex flex-col md:flex-row items-center justify-center gap-4 min-h-[140px]" id="buttons-container">
+                <!-- Tombol YES (Mau) -->
+                <button id="btn-yes" onclick="showCelebration()" class="px-8 py-4 bg-gradient-to-r from-emerald-400 to-teal-500 text-white font-bold rounded-2xl shadow-lg shadow-emerald-200 hover:shadow-emerald-300 transform hover:-translate-y-1 transition-all duration-200 flex items-center gap-2 text-base md:text-lg z-20">
+                    <i class="fa-solid fa-face-smile-wink text-xl"></i> Mauuu!
+                </button>
+                
+                <!-- Tombol NO (Mengecil & Menghindar) -->
+                <button id="btn-no" 
+                        onmouseover="shrinkNo()" 
+                        onclick="shrinkNo()" 
+                        ontouchstart="shrinkNo(event)"
+                        class="px-6 py-3 bg-rose-500 text-white font-semibold rounded-xl shadow-md hover:bg-rose-600 transition-all duration-200 flex items-center gap-2 text-sm z-30">
+                    Nggak ah 😜
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tampilan 3: Halaman Selebrasi Akhir -->
+    <div id="section-celebration" class="hidden w-full max-w-md bg-white rounded-3xl shadow-2xl p-8 border-4 border-emerald-300 text-center z-10 transform scale-95 opacity-0 transition-all duration-700">
+        <!-- Maskot Hati Selebrasi -->
+        <div class="w-24 h-24 bg-rose-100 rounded-full flex items-center justify-center mx-auto mb-6 relative">
+            <i class="fa-solid fa-heart text-rose-500 text-5xl animate-bounce"></i>
+            <div class="absolute -top-1 -right-1 sparkle"><i class="fa-solid fa-star text-amber-400 text-xl"></i></div>
+            <div class="absolute -bottom-1 -left-1 sparkle"><i class="fa-solid fa-star text-amber-400 text-xl"></i></div>
+        </div>
+
+        <h2 class="serif-font text-3xl font-bold text-rose-600 mb-4">Yeayyy Asyikk! 🎉</h2>
+        <p class="text-gray-700 text-lg mb-6 font-medium">
+            Makasih banyak yaa! Janji bakal saling melengkapi dan bahagia terus bareng-bareng! 🥰❤️
+        </p>
+
+        <!-- Informasi Hiasan -->
+        <div class="p-4 bg-rose-50 rounded-2xl border border-rose-100 flex items-center justify-center gap-3">
+            <span class="text-3xl">🥳</span>
+            <div class="text-left">
+                <p class="text-xs text-gray-400">Pesan cinta terkonfirmasi</p>
+                <p class="text-sm font-semibold text-rose-500">I Love You So Much!</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Membuat efek partikel lembut mengapung di latar belakang
+        function createBackgroundHearts() {
+            const container = document.getElementById('bg-hearts-container');
+            const icons = ['fa-heart', 'fa-envelope', 'fa-star'];
+            
+            for (let i = 0; i < 20; i++) {
+                const heart = document.createElement('i');
+                const randomIcon = icons[Math.floor(Math.random() * icons.length)];
+                heart.className = `fa-solid ${randomIcon} heart-float`;
+                
+                heart.style.left = `${Math.random() * 100}vw`;
+                heart.style.animationDelay = `${Math.random() * 8}s`;
+                heart.style.fontSize = `${Math.random() * 20 + 10}px`;
+                heart.style.animationDuration = `${Math.random() * 5 + 5}s`;
+                
+                // Kombinasi warna pastel lembut
+                const r = Math.floor(Math.random() * 40) + 215;
+                const g = Math.floor(Math.random() * 100) + 100;
+                const b = Math.floor(Math.random() * 100) + 120;
+                heart.style.color = `rgba(${r}, ${g}, ${b}, 0.5)`;
+
+                container.appendChild(heart);
+            }
+        }
+
+        // Mulai partikel background secara otomatis
+        window.addEventListener('load', () => {
+            createBackgroundHearts();
+        });
+
+        // Logika interaksi amplop terbuka
+        let envelopeClicked = false;
+        function openLetter() {
+            if (envelopeClicked) {
+                transitionToLetter();
+                return;
+            }
+            envelopeClicked = true;
+            
+            const envelope = document.getElementById('my-envelope');
+            const seal = document.getElementById('seal-icon');
+            
+            envelope.classList.add('open');
+            if (seal) {
+                seal.style.transform = 'scale(0) rotate(180deg)';
+                setTimeout(() => seal.remove(), 400);
+            }
+
+            // Panduan bantuan klik kedua
+            setTimeout(() => {
+                const guide = document.createElement('div');
+                guide.id = 'guide-second-tap';
+                guide.className = 'absolute -top-20 left-1/2 transform -translate-x-1/2 bg-rose-600 text-white text-xs px-3 py-2 rounded-lg shadow-md animate-bounce z-50';
+                guide.innerHTML = 'Klik sekali lagi untuk membuka surat! ✨';
+                document.getElementById('section-envelope').appendChild(guide);
+            }, 1200);
+        }
+
+        // Transisi ke tampilan isi kertas surat
+        function transitionToLetter() {
+            const secEnvelope = document.getElementById('section-envelope');
+            const secLetter = document.getElementById('section-letter');
+            
+            secEnvelope.classList.add('scale-75', 'opacity-0');
+            setTimeout(() => {
+                secEnvelope.classList.add('hidden');
+                secLetter.classList.remove('hidden');
+                
+                setTimeout(() => {
+                    secLetter.classList.remove('scale-95', 'opacity-0');
+                    secLetter.classList.add('scale-100', 'opacity-100');
+                }, 50);
+            }, 600);
+        }
+
+        // Mekanik tombol NO agar terus mengecil dan menjauh
+        let clickCount = 0;
+        let scaleVal = 1.0;
+        let yesScaleVal = 1.0;
+
+        function shrinkNo(event) {
+            if (event && event.type === 'touchstart') {
+                event.preventDefault(); // Cegah interaksi ganda pada ponsel
+            }
+
+            clickCount++;
+            const btnNo = document.getElementById('btn-no');
+            const btnYes = document.getElementById('btn-yes');
+            const questionText = document.getElementById('question-text');
+
+            // 1. Perkecil tombol NO sebesar 30% setiap kali disentuh
+            scaleVal = scaleVal * 0.7;
+            btnNo.style.transform = `scale(${scaleVal})`;
+
+            // 2. Perbesar ukuran tombol YES secara proporsional
+            yesScaleVal = yesScaleVal + 0.15;
+            btnYes.style.transform = `scale(${yesScaleVal})`;
+            btnYes.style.boxShadow = `0 15px 40px rgba(16, 185, 129, ${0.1 * yesScaleVal})`;
+
+            // 3. Pindahkan tombol NO ke titik koordinat acak di sekitarnya
+            const container = document.getElementById('buttons-container');
+            const containerRect = container.getBoundingClientRect();
+            
+            const maxW = (containerRect.width / 2) - 40;
+            const maxH = 50;
+            
+            const randomX = (Math.random() - 0.5) * maxW * 1.5;
+            const randomY = (Math.random() - 0.5) * maxH * 2;
+            
+            btnNo.style.position = 'relative';
+            btnNo.style.left = `${randomX}px`;
+            btnNo.style.top = `${randomY}px`;
+
+            // 4. Jika ukuran tombol sudah super kecil, sembunyikan sepenuhnya
+            if (scaleVal < 0.15) {
+                btnNo.style.display = 'none';
+                questionText.innerHTML = "Hehe, ga bisa nolak kan? Pilih Mauuu! ya! 😉💖";
+                questionText.classList.add('text-rose-600', 'animate-pulse');
+            } else {
+                // Teks balasan berganti seiring penolakan
+                if (clickCount === 2) {
+                    questionText.innerHTML = "Kok milih itu sih? 🥺 Yuk pilih Mauuu!";
+                } else if (clickCount === 4) {
+                    questionText.innerHTML = "Yakin? Nanti tombolnya hilang loh... 😜";
+                }
+            }
+        }
+
+        // Tampilkan halaman akhir dengan efek konfeti warna-warni
+        function showCelebration() {
+            const secLetter = document.getElementById('section-letter');
+            const secCelebration = document.getElementById('section-celebration');
+
+            secLetter.classList.add('scale-75', 'opacity-0');
+            
+            setTimeout(() => {
+                secLetter.classList.add('hidden');
+                secCelebration.classList.remove('hidden');
+                
+                setTimeout(() => {
+                    secCelebration.classList.remove('scale-95', 'opacity-0');
+                    secCelebration.classList.add('scale-100', 'opacity-100');
+                    
+                    startHeartConfetti();
+                }, 50);
+            }, 600);
+        }
+
+        // Generator selebrasi hujan bentuk hati
+        function startHeartConfetti() {
+            const colors = ['#ff4d6d', '#ff758f', '#ff85a1', '#fbc4b6', '#ea8c8c'];
+            
+            for (let i = 0; i < 60; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.style.position = 'fixed';
+                    confetti.style.top = '-20px';
+                    confetti.style.left = `${Math.random() * 100}vw`;
+                    confetti.style.zIndex = '99';
+                    confetti.style.pointerEvents = 'none';
+                    
+                    const size = Math.random() * 20 + 10;
+                    confetti.innerHTML = `
+                        <svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="${colors[Math.floor(Math.random() * colors.length)]}">
+                            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                        </svg>
+                    `;
+
+                    confetti.animate([
+                        { transform: `translateY(0px) rotate(0deg)`, opacity: 1 },
+                        { transform: `translateY(105vh) translateX(${(Math.random() - 0.5) * 300}px) rotate(${Math.random() * 360}deg)`, opacity: 0 }
+                    ], {
+                        duration: Math.random() * 3000 + 2000,
+                        easing: 'cubic-bezier(0.1, 0.8, 0.3, 1)'
+                    });
+
+                    document.body.appendChild(confetti);
+                    
+                    setTimeout(() => confetti.remove(), 5000);
+                }, i * 60);
+            }
+        }
+    </script>
+</body>
+</html>
